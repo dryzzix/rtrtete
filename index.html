@@ -1,0 +1,100 @@
+
+
+Pular para o conteúdo
+Como usar o E-mail de SEED com leitores de tela
+1 de 8.888
+(sem assunto)
+Caixa de entrada
+
+LUCCA GABRIEL BIRELLO <lucca.birello@escola.pr.gov.br>
+11:00 (há 2 minutos)
+para mim
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gangorra Equilíbrio Invertido</title>
+    <style>
+        body { 
+            margin: 0; 
+            background: #000; 
+            overflow: hidden; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+let time = 0;
+const barWidth = 550;      
+const hexSize = 20;        
+const barThickness = 2;    
+
+function drawHexagon(x, y, size, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+        ctx.lineTo(size * Math.cos(i * Math.PI / 3), 
+                   size * Math.sin(i * Math.PI / 3));
+    }
+    ctx.closePath();
+    ctx.fillStyle = '#FFF';
+    ctx.fill();
+    ctx.restore();
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    time += 0.015; 
+
+    // Inclinação da barra
+    // O sinal negativo aqui ou na posição inverte quem "manda" no movimento
+    let angle = Math.sin(time) * 0.3;
+
+    // LÓGICA DE EQUILÍBRIO:
+    // Para o hexágono ir para a ponta que está no ALTO:
+    // Se o ângulo é positivo (ponta direita para baixo), hexX deve ser negativo (ir para a esquerda).
+    // Se o ângulo é negativo (ponta esquerda para baixo), hexX deve ser positivo (ir para a direita).
+    let limit = (barWidth / 2) - hexSize;
+    let hexX = -Math.sin(time) * limit; // O sinal de menos (-) faz ele subir a ladeira
+
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2); 
+    ctx.rotate(angle);
+
+    // Barra fina
+    ctx.fillStyle = '#FFF';
+    ctx.fillRect(-barWidth / 2, -barThickness / 2, barWidth, barThickness);
+
+    // Hexágono (subindo para a extremidade alta)
+    // A rotação hexX * 0.1 faz ele parecer que está "escalando" a barra
+    drawHexagon(hexX, -hexSize - (barThickness / 2), hexSize, hexX * 0.1);
+
+    ctx.restore();
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html>
